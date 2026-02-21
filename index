@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Planejamento Financeiro</title>
+
+<style>
+:root{
+  --bg1:#030712;
+  --bg2:#050f24;
+  --glass:rgba(255,255,255,.06);
+  --border:#00eaff55;
+  --neon:#00eaff;
+  --text:#e9f7ff;
+  --green:#3fffd9;
+  --red:#ff7b7b;
+  --blue:#00eaff;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:'Segoe UI',Arial,sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#061a33,var(--bg1));
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 30%,#00eaff33 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,#0066ff33 0%,transparent 45%);
+  z-index:-1;
+}
+
+/* HEADER */
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+  background:rgba(5,12,30,.75);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 0 20px #00eaff33;
+  padding:16px;
+}
+
+.header h1{
+  margin:0 0 10px;
+  font-size:22px;
+  letter-spacing:2px;
+  text-shadow:0 0 10px var(--neon);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:12px;
+  opacity:.9;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.user-chip img{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  box-shadow:0 0 14px #00eaff33;
+}
+
+.logout-btn{
+  border:none;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+.google-btn{
+  border:none;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#00eaff,#0077ff);
+  color:#02131f;
+  font-weight:800;
+  box-shadow:0 0 20px #00eaff55;
+}
+
+.top-cards{
+  display:flex;
+  gap:10px;
+}
+
+.top-card{
+  flex:1;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 0 12px #00eaff22 inset;
+}
+
+.top-card span{
+  font-size:11px;
+  opacity:.7;
+}
+
+.top-card strong{
+  display:block;
+  margin-top:6px;
+  font-size:16px;
+  text-shadow:0 0 6px var(--neon);
+}
+
+.content{
+  padding:20px;
+  padding-top:230px;
+}
+
+/* MÊS */
+.month{
+  background:var(--glass);
+  border:1px solid var(--border);
+  padding:14px;
+  border-radius:22px;
+  margin-bottom:18px;
+  box-shadow:0 0 15px #00eaff22;
+}
+
+.month-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.month-btn{
+  width:44px;
+  height:44px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-size:18px;
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+  border:1px solid var(--border);
+  box-shadow:0 0 15px #00eaff22;
+  transition:.2s;
+}
+
+.month-btn:active{
+  transform:scale(.96);
+}
+
+.month-title{
+  flex:1;
+  font-size:16px;
+  font-weight:bold;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:var(--text);
+  text-align:center;
+  letter-spacing:1px;
+  text-shadow:0 0 10px #00eaff44;
+}
+
+/* GRÁFICO */
+.chart-box{
+  background:rgba(0,0,0,.75);
+  border:1px solid var(--border);
+  border-radius:26px;
+  padding:18px;
+  margin-bottom:22px;
+  box-shadow:0 0 35px #00eaff33,inset 0 0 25px #00eaff22;
+}
+
+canvas{
+  width:100%;
+  max-width:420px;
+  display:block;
+  margin:0 auto;
+  background:#000;
+  border-radius:18px;
+  box-shadow:0 0 30px #00eaff55,inset 0 0 20px #00eaff22;
+}
+
+/* BLOCOS */
+.block{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 0 18px #00eaff22;
+  transition:.25s;
+}
+
+.item{
+  display:grid;
+  grid-template-columns:1fr 100px 36px;
+  gap:8px;
+  margin-top:8px;
+}
+
+.item input{
+  padding:10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+}
+
+.delete-btn{
+  border:none;
+  border-radius:12px;
+  background:rgba(255,100,100,.15);
+  color:#ff6b6b;
+  font-size:18px;
+  cursor:pointer;
+}
+
+/* Parcelamentos */
+.parc-item{
+  display:grid;
+  grid-template-columns: 1fr 90px 90px 160px 36px;
+  gap:8px;
+  margin-top:8px;
+}
+.parc-item input{
+  padding:10px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+}
+.parc-info{
+  margin-top:10px;
+  opacity:.85;
+  font-size:13px;
+  line-height:1.4;
+}
+.parc-info strong{
+  color:var(--green);
+  text-shadow:0 0 10px #3fffd944;
+}
+
+/* Automáticos do parcelamento */
+.auto-parc{
+  opacity:.85;
+}
+.auto-parc input{
+  pointer-events:none;
+}
+
+.add-btn{
+  margin-top:12px;
+  background:none;
+  border:none;
+  color:var(--blue);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.pdf-btn{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:24px;
+  background:linear-gradient(135deg,#00eaff,#0077ff);
+  color:#02131f;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 25px #00eaff66;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  box-shadow:0 0 12px #00eaff22 inset;
+  opacity:.9;
+}
+
+.badge-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#3fffd9;
+  box-shadow:0 0 10px #3fffd966;
+}
+.badge-dot.offline{
+  background:#ff7b7b;
+  box-shadow:0 0 10px #ff7b7b66;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <div class="header">
+    <h1>
+      <span>Planejamento Financeiro</span>
+
+      <span class="user-chip">
+        <span class="badge" id="netBadge">
+          <span class="badge-dot" id="netDot"></span>
+          <span id="netText">Online</span>
+        </span>
+
+        <img id="userPhoto" src="" alt="" style="display:none;">
+        <span id="userName">Offline</span>
+
+        <button class="google-btn" id="btnLogin">Entrar</button>
+        <button class="logout-btn" id="btnLogout" style="display:none;">Sair</button>
+      </span>
+    </h1>
+
+    <div class="top-cards">
+      <div class="top-card"><span>Renda</span><strong id="topRenda">R$ 0,00</strong></div>
+      <div class="top-card"><span>Gastos</span><strong id="topGastos">R$ 0,00</strong></div>
+      <div class="top-card"><span>Saldo</span><strong id="topSaldo">R$ 0,00</strong></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="month">
+      <div class="month-row">
+        <button class="month-btn" onclick="prevMonth()">◀</button>
+        <input id="monthTitle" class="month-title" readonly>
+        <button class="month-btn" onclick="nextMonth()">▶</button>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="chart" width="360" height="240"></canvas>
+    </div>
+
+    <div class="block" data-type="renda">
+      <h3>Renda</h3>
+      <div class="items"></div>
+      <button class="add-btn" onclick="addItem('renda')">+ Adicionar renda</button>
+    </div>
+
+    <div class="block" data-type="inv">
+      <h3>Investimentos</h3>
+      <div class="items"></div>
+      <button class="add-btn" onclick="addItem('inv')">+ Adicionar investimento</button>
+    </div>
+
+    <div class="block" data-type="parc">
+      <h3>Parcelamentos Pendentes (só no mês)</h3>
+      <div class="items"></div>
+      <div class="parc-info" id="parcInfo">Total em parcelamentos: <strong>R$ 0,00</strong></div>
+      <button class="add-btn" onclick="addParcelamento()">+ Adicionar parcelamento</button>
+    </div>
+
+    <div class="block" data-type="fixo">
+      <h3>Gastos Fixos</h3>
+      <div class="items"></div>
+      <button class="add-btn" onclick="addItem('fixo')">+ Adicionar gasto fixo</button>
+    </div>
+
+    <div class="block" data-type="vari">
+      <h3>Gastos Variáveis</h3>
+      <div class="items"></div>
+      <button class="add-btn" onclick="addItem('vari')">+ Adicionar gasto variável</button>
+    </div>
+
+    <button class="pdf-btn" onclick="savePDF()">Salvar em PDF</button>
+
+  </div>
+</div>
+
+<script type="module">
+/* ==========================================================
+   FIREBASE (CDN) + LOGIN GOOGLE + FIRESTORE
+========================================================== */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* ==========================================================
+   1) FIREBASE CONFIG (SEU PROJETO)
+========================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAq8yk-Fg3P3sBWeSmKxOK-7W5By-H5VX4",
+  authDomain: "planilha-planejamento-fc90c.firebaseapp.com",
+  projectId: "planilha-planejamento-fc90c",
+  storageBucket: "planilha-planejamento-fc90c.firebasestorage.app",
+  messagingSenderId: "665899438697",
+  appId: "1:665899438697:web:bc60a300fcc348ddc4c8f8",
+  measurementId: "G-794E8RJZRC"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
+
+let USER = null;
+
+/* ==========================================================
+   2) UI / STATUS
+========================================================== */
+const btnLogin = document.getElementById("btnLogin");
+const btnLogout = document.getElementById("btnLogout");
+const userName = document.getElementById("userName");
+const userPhoto = document.getElementById("userPhoto");
+
+const netDot = document.getElementById("netDot");
+const netText = document.getElementById("netText");
+
+/* ✅ FIX: declarar elementos usados no calc() e load() */
+const topRenda = document.getElementById("topRenda");
+const topGastos = document.getElementById("topGastos");
+const topSaldo = document.getElementById("topSaldo");
+const monthTitle = document.getElementById("monthTitle");
+const chart = document.getElementById("chart");
+
+function updateNet(){
+  const on = navigator.onLine;
+  netText.textContent = on ? "Online" : "Offline";
+  netDot.classList.toggle("offline", !on);
+}
+window.addEventListener("online", updateNet);
+window.addEventListener("offline", updateNet);
+updateNet();
+
+/* ==========================================================
+   3) LOCAL STORAGE (MODO OFFLINE)
+========================================================== */
+function pad2(n){ return String(n).padStart(2,"0"); }
+function monthKey(year, month){ return `${year}-${pad2(month+1)}`; }
+
+function localPrefix(){
+  return USER ? `pf_v3_${USER.uid}` : "pf_v3_guest";
+}
+
+function lsGet(key, fallback=null){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch{
+    return fallback;
+  }
+}
+
+function lsSet(key, value){
+  try{
+    localStorage.setItem(key, JSON.stringify(value));
+  }catch{}
+}
+
+function localMonthKey(year, month){
+  return `${localPrefix()}_month_${monthKey(year,month)}`;
+}
+function localParcelamentosKey(){
+  return `${localPrefix()}_parcelamentos`;
+}
+
+/* ==========================================================
+   4) FIRESTORE PATHS
+========================================================== */
+function monthDocId(year, month){
+  return `${year}-${pad2(month+1)}`;
+}
+function userRoot(){
+  return `users/${USER.uid}`;
+}
+
+async function fsLoadMonth(year, month){
+  const ref = doc(db, userRoot(), "months", monthDocId(year, month));
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null;
+}
+async function fsSaveMonth(year, month, data){
+  const ref = doc(db, userRoot(), "months", monthDocId(year, month));
+  await setDoc(ref, data, { merge:true });
+}
+
+async function fsLoadParcelamentos(){
+  const ref = doc(db, userRoot(), "meta", "parcelamentos");
+  const snap = await getDoc(ref);
+  return snap.exists() ? (snap.data()?.list || []) : [];
+}
+async function fsSaveParcelamentos(list){
+  const ref = doc(db, userRoot(), "meta", "parcelamentos");
+  await setDoc(ref, { list }, { merge:true });
+}
+
+/* ==========================================================
+   5) STORAGE UNIFICADO
+========================================================== */
+function canUseCloud(){
+  return !!USER && navigator.onLine;
+}
+
+async function loadMonthData(year, month){
+  if(canUseCloud()){
+    try{
+      const d = await fsLoadMonth(year, month);
+      if(d) return d;
+    }catch{}
+  }
+  return lsGet(localMonthKey(year,month), null);
+}
+
+async function saveMonthData(year, month, data){
+  lsSet(localMonthKey(year,month), data);
+  if(canUseCloud()){
+    try{ await fsSaveMonth(year, month, data); }catch{}
+  }
+}
+
+async function loadParcelamentosData(){
+  if(canUseCloud()){
+    try{
+      const list = await fsLoadParcelamentos();
+      return Array.isArray(list) ? list : [];
+    }catch{}
+  }
+  return lsGet(localParcelamentosKey(), []);
+}
+
+async function saveParcelamentosData(list){
+  lsSet(localParcelamentosKey(), list);
+  if(canUseCloud()){
+    try{ await fsSaveParcelamentos(list); }catch{}
+  }
+}
+
+/* ==========================================================
+   6) LOGIN
+========================================================== */
+btnLogin.onclick = async () => {
+  if(!navigator.onLine){
+    alert("Você está offline. Dá pra usar normal, mas pra logar precisa de internet.");
+    return;
+  }
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    alert("Erro no login: " + (e?.message || e));
+  }
+};
+
+btnLogout.onclick = async () => {
+  const ok = confirm("Tem certeza que deseja sair da sua conta Google?");
+  if(!ok) return;
+  try{
+    await signOut(auth);
+  }catch(e){
+    alert("Erro ao sair: " + (e?.message || e));
+  }
+};
+
+/* ==========================================================
+   7) APP
+========================================================== */
+const meses = [
+  "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+  "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth();
+let bars = [];
+let isLoading = false;
+let saveTimer = null;
+
+function format(v){
+  return (+v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+function monthLabel(year,month){
+  return `${meses[month]} / ${year}`;
+}
+
+/* ==========================
+   ITENS (NORMAL)
+========================== */
+window.addItem = function(type,data={}){
+  const box=document.querySelector(`[data-type="${type}"] .items`);
+  const div=document.createElement("div");
+  div.className="item";
+  div.innerHTML=`
+    <input class="title" placeholder="Título" value="${data.title||""}">
+    <input class="value" type="number" placeholder="0" value="${data.value ?? ""}">
+    <button class="delete-btn">✕</button>
+  `;
+  box.appendChild(div);
+
+  div.querySelectorAll("input").forEach(i=>{
+    i.addEventListener("input",()=>{
+      if(isLoading) return;
+      calc();
+      scheduleSave();
+    });
+  });
+
+  div.querySelector(".delete-btn").onclick=()=>{
+    if(confirm("Excluir este item?")){
+      div.remove();
+      calc();
+      scheduleSave();
+    }
+  };
+
+  if(!isLoading){
+    scheduleSave();
+    calc();
+  }
+}
+
+/* total corrigido: fixo ignora automáticos */
+function total(type){
+  let t=0;
+
+  if(type === "fixo"){
+    document.querySelectorAll(`[data-type="fixo"] .item:not(.auto-parc) .value`)
+      .forEach(i=>t+=+i.value||0);
+    return t;
+  }
+
+  document.querySelectorAll(`[data-type="${type}"] .value`)
+    .forEach(i=>t+=+i.value||0);
+
+  return t;
+}
+
+/* ==========================
+   PARCELAMENTOS (GLOBAL)
+========================== */
+let parcelamentosCache = [];
+
+/* ==========================
+   FUNÇÕES DE DATA
+========================== */
+function monthIndex(y,m){
+  return (y*12) + m; // m 0-11
+}
+
+function isMonthInsideParcelamento(p, year, month){
+  const startY = +p.startYear;
+  const startM = +p.startMonth;
+  const qty = +p.qty || 0;
+  if(qty <= 0) return false;
+
+  const start = monthIndex(startY,startM);
+  const end = start + (qty - 1);
+  const cur = monthIndex(year,month);
+
+  return cur >= start && cur <= end;
+}
+
+/* ==========================
+   PARC INFO (SÓ ATIVOS NO MÊS)
+========================== */
+function updateParcelamentosInfo(){
+  const el = document.getElementById("parcInfo");
+  if(!el) return;
+
+  const ativos = (parcelamentosCache || []).filter(p =>
+    isMonthInsideParcelamento(p, currentYear, currentMonth)
+  );
+
+  const totalMes = ativos.reduce((sum,p)=> sum + (+p.value || 0), 0);
+
+  if(ativos.length === 0){
+    el.style.display = "none";
+    return;
+  }
+
+  el.style.display = "block";
+  el.innerHTML = `Total em parcelamentos: <strong>${format(totalMes)}</strong>`;
+}
+
+/* ==========================
+   FIXOS AUTOMÁTICOS DO MÊS
+========================== */
+function getFixosAutoForMonth(year, month){
+  const autos = [];
+
+  (parcelamentosCache || []).forEach(p=>{
+    if(!isMonthInsideParcelamento(p, year, month)) return;
+
+    const title = (p.title || "").trim();
+    const value = +p.value || 0;
+    const qty = +p.qty || 0;
+    if(!title || value <= 0 || qty <= 0) return;
+
+    const start = monthIndex(+p.startYear, +p.startMonth);
+    const cur = monthIndex(year, month);
+    const k = (cur - start) + 1; // parcela atual
+
+    autos.push({
+      title: `📌 ${title} (${k}/${qty})`,
+      value: value
+    });
+  });
+
+  return autos;
+}
+
+/* ==========================
+   RENDER UI PARCELAMENTOS
+   (SÓ OS DO MÊS)
+========================== */
+function renderParcelamentosUI(){
+  const box=document.querySelector(`[data-type="parc"] .items`);
+  box.innerHTML="";
+
+  const visibles = (parcelamentosCache || []).filter(p =>
+    isMonthInsideParcelamento(p, currentYear, currentMonth)
+  );
+
+  visibles.forEach((p)=>{
+    const div=document.createElement("div");
+    div.className="parc-item";
+
+    div.innerHTML=`
+      <input class="ptitle" placeholder="Título" value="${p.title||""}">
+      <input class="pvalue" type="number" placeholder="Parcela" value="${p.value ?? ""}">
+      <input class="pqty" type="number" placeholder="Qtd" value="${p.qty ?? ""}">
+      <input class="pstart" type="month" value="${(+p.startYear)}-${pad2((+p.startMonth)+1)}">
+      <button class="delete-btn">✕</button>
+    `;
+
+    box.appendChild(div);
+
+    const startInput = div.querySelector(".pstart");
+
+    const onChange = async ()=>{
+      const title = div.querySelector(".ptitle").value.trim();
+      const value = +div.querySelector(".pvalue").value || 0;
+      const qty = +div.querySelector(".pqty").value || 0;
+
+      let startYear = +p.startYear;
+      let startMonth = +p.startMonth;
+
+      const v = startInput.value;
+      if(v && v.includes("-")){
+        const [yy, mm] = v.split("-");
+        startYear = +yy;
+        startMonth = (+mm) - 1;
+      }
+
+      p.title = title;
+      p.value = value;
+      p.qty = qty;
+      p.startYear = startYear;
+      p.startMonth = startMonth;
+
+      await saveParcelamentosData(parcelamentosCache);
+      await load();
+      renderParcelamentosUI();
+    };
+
+    div.querySelectorAll("input").forEach(i=>{
+      i.addEventListener("input", onChange);
+    });
+
+    div.querySelector(".delete-btn").onclick = async ()=>{
+      if(!confirm("Excluir este parcelamento?")) return;
+
+      parcelamentosCache = parcelamentosCache.filter(x => x !== p);
+
+      await saveParcelamentosData(parcelamentosCache);
+      await load();
+      renderParcelamentosUI();
+    };
+  });
+
+  updateParcelamentosInfo();
+}
+
+/* ✅ FIX: randomUUID com fallback garantido */
+function safeUUID(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return "p_" + Date.now() + "_" + Math.floor(Math.random()*999999);
+}
+
+window.addParcelamento = async function(){
+  const startYear = currentYear;
+  const startMonth = currentMonth;
+
+  parcelamentosCache.push({
+    id: safeUUID(),
+    title: "",
+    value: "",
+    qty: "",
+    startMonth,
+    startYear
+  });
+
+  await saveParcelamentosData(parcelamentosCache);
+  await load();
+  renderParcelamentosUI();
+}
+
+/* ==========================
+   CALC
+========================== */
+function calc(){
+  const renda=total("renda");
+  const inv=total("inv");
+
+  const fixoManual = total("fixo");
+  const fixoAuto = getFixosAutoForMonth(currentYear,currentMonth)
+    .reduce((a,b)=>a+(+b.value||0),0);
+
+  const vari=total("vari");
+  const gastos=(fixoManual + fixoAuto) + vari;
+
+  topRenda.textContent=format(renda);
+  topGastos.textContent=format(gastos+inv);
+  topSaldo.textContent=format(renda-gastos-inv);
+
+  drawChart(renda,gastos,inv);
+}
+
+/* ==========================
+   SAVE / LOAD
+========================== */
+function scheduleSave(){
+  if(isLoading) return;
+
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    save().catch(()=>{});
+  }, 450);
+}
+
+async function save(){
+  if(isLoading) return;
+
+  const data={blocks:{}};
+
+  ["renda","inv","fixo","vari"].forEach(t=>{
+    data.blocks[t]=[];
+    document.querySelectorAll(`[data-type="${t}"] .item`).forEach(i=>{
+      if(i.classList.contains("auto-parc")) return;
+
+      data.blocks[t].push({
+        title:i.querySelector(".title").value,
+        value:i.querySelector(".value").value
+      });
+    });
+  });
+
+  await saveMonthData(currentYear,currentMonth, data);
+}
+
+async function load(){
+  isLoading = true;
+
+  monthTitle.value = monthLabel(currentYear,currentMonth);
+
+  document.querySelectorAll(`.block:not([data-type="parc"]) .items`).forEach(i=>i.innerHTML="");
+
+  const d = await loadMonthData(currentYear,currentMonth);
+
+  if(d?.blocks){
+    ["renda","inv","fixo","vari"].forEach(t=>{
+      const list = d.blocks[t] || [];
+      list.forEach(i=>window.addItem(t,i));
+    });
+  }
+
+  const fixoBox=document.querySelector(`[data-type="fixo"] .items`);
+  const autos=getFixosAutoForMonth(currentYear,currentMonth);
+
+  autos.forEach(a=>{
+    const div=document.createElement("div");
+    div.className="item auto-parc";
+    div.innerHTML=`
+      <input class="title" value="${a.title}" readonly>
+      <input class="value" value="${a.value}" readonly>
+      <button class="delete-btn" disabled style="opacity:.25; cursor:not-allowed;">✕</button>
+    `;
+    fixoBox.appendChild(div);
+  });
+
+  isLoading = false;
+
+  calc();
+  updateParcelamentosInfo();
+}
+
+/* ==========================
+   NAVEGAÇÃO MESES
+========================== */
+window.prevMonth = async function(){
+  currentMonth--;
+  if(currentMonth < 0){
+    currentMonth = 11;
+    currentYear--;
+  }
+  await load();
+  renderParcelamentosUI();
+}
+
+window.nextMonth = async function(){
+  currentMonth++;
+  if(currentMonth > 11){
+    currentMonth = 0;
+    currentYear++;
+  }
+  await load();
+  renderParcelamentosUI();
+}
+
+/* ==========================
+   GRÁFICO
+========================== */
+function drawChart(r,g,i){
+  const c=chart.getContext("2d");
+  c.clearRect(0,0,360,240);
+  bars=[];
+
+  const data=[
+    {n:"Renda",v:r,c:"#3fffd9"},
+    {n:"Gastos",v:g,c:"#ff7b7b"},
+    {n:"Invest.",v:i,c:"#00eaff"}
+  ];
+
+  const max=Math.max(...data.map(d=>d.v),1);
+  c.font="12px Segoe UI";
+  c.textAlign="center";
+
+  data.forEach((d,x)=>{
+    const h=(d.v/max)*140;
+    const bx=40+x*100, by=190-h;
+
+    c.shadowColor=d.c;
+    c.shadowBlur=20;
+    c.fillStyle=d.c;
+    c.fillRect(bx,by,60,h);
+
+    c.shadowBlur=0;
+    c.fillStyle="#e9f7ff";
+    c.fillText(format(d.v),bx+30,by-8);
+    c.fillText(d.n,bx+30,212);
+
+    bars.push({x:bx,y:by,w:60,h:h,t:d.n+": "+format(d.v)});
+  });
+}
+
+chart.onclick=e=>{
+  const r=chart.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  bars.forEach(b=>{
+    if(x>b.x&&x<b.x+b.w&&y>b.y&&y<b.y+b.h){
+      alert(b.t);
+    }
+  });
+};
+
+/* ==========================================================
+   PDF OFFLINE
+========================================================== */
+window.savePDF = function(){
+  const renda = topRenda.textContent;
+  const gastos = topGastos.textContent;
+  const saldo = topSaldo.textContent;
+
+  const autos = getFixosAutoForMonth(currentYear,currentMonth);
+
+  function getList(type){
+    const arr=[];
+    document.querySelectorAll(`[data-type="${type}"] .item:not(.auto-parc)`).forEach(row=>{
+      const title=row.querySelector(".title").value.trim();
+      const value=row.querySelector(".value").value;
+      if(title || value){
+        arr.push({title:title||"(sem título)", value: format(+value||0)});
+      }
+    });
+    return arr;
+  }
+
+  const rendaList = getList("renda");
+  const invList = getList("inv");
+  const fixoManualList = getList("fixo");
+  const variList = getList("vari");
+
+  const fixoAutoList = autos.map(a=>({
+    title: a.title,
+    value: format(+a.value||0)
+  }));
+
+  const html = `
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>PDF</title>
+    <style>
+      body{ font-family: Arial; padding: 20px; color:#111; }
+      h1{ margin:0 0 10px; }
+      .meta{ margin: 0 0 18px; font-size:14px; }
+      .grid{ display:flex; gap:10px; margin-bottom: 18px; }
+      .card{ flex:1; padding:12px; border:1px solid #ccc; border-radius:12px; }
+      .card strong{ display:block; margin-top:6px; font-size:16px; }
+      h2{ margin:18px 0 8px; }
+      table{ width:100%; border-collapse: collapse; }
+      th,td{ border:1px solid #ddd; padding:8px; text-align:left; font-size:13px; }
+      th{ background:#f3f3f3; }
+    </style>
+  </head>
+  <body>
+    <h1>Planejamento Financeiro</h1>
+    <div class="meta"><b>Mês:</b> ${monthLabel(currentYear,currentMonth)}</div>
+
+    <div class="grid">
+      <div class="card"><span>Renda</span><strong>${renda}</strong></div>
+      <div class="card"><span>Gastos</span><strong>${gastos}</strong></div>
+      <div class="card"><span>Saldo</span><strong>${saldo}</strong></div>
+    </div>
+
+    ${makeTable("Renda", rendaList)}
+    ${makeTable("Investimentos", invList)}
+    ${makeTable("Gastos Fixos (Manuais)", fixoManualList)}
+    ${makeTable("Gastos Fixos (Parcelamentos)", fixoAutoList)}
+    ${makeTable("Gastos Variáveis", variList)}
+
+    <script>
+      window.onload = () => { window.print(); }
+    <\/script>
+  </body>
+  </html>
+  `;
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function makeTable(title, list){
+  if(!list.length){
+    return `<h2>${title}</h2><div style="opacity:.7">Nenhum item</div>`;
+  }
+
+  let rows = "";
+  list.forEach(i=>{
+    rows += `<tr><td>${escapeHtml(i.title)}</td><td>${i.value}</td></tr>`;
+  });
+
+  return `
+    <h2>${title}</h2>
+    <table>
+      <thead><tr><th>Título</th><th>Valor</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function escapeHtml(str){
+  return (str||"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* ==========================================================
+   START APP
+========================================================== */
+async function refreshUserUI(){
+  if(!USER){
+    userName.textContent = "Offline";
+    userPhoto.style.display = "none";
+    btnLogout.style.display = "none";
+    btnLogin.style.display = "inline-block";
+    return;
+  }
+
+  userName.textContent = USER.displayName || "Usuário";
+  userPhoto.src = USER.photoURL || "";
+  userPhoto.style.display = USER.photoURL ? "block" : "none";
+
+  btnLogout.style.display = "inline-block";
+  btnLogin.style.display = "none";
+}
+
+async function bootData(){
+  parcelamentosCache = await loadParcelamentosData();
+  await load();
+  renderParcelamentosUI();
+}
+
+await refreshUserUI();
+await bootData();
+
+onAuthStateChanged(auth, async (u)=>{
+  USER = u || null;
+  await refreshUserUI();
+  await bootData();
+});
+</script>
+
+</body>
+</html>
